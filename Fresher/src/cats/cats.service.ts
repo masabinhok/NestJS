@@ -4,7 +4,7 @@ import { Cat, CatDocument } from "./schemas/cat.schema";
 import { Model } from "mongoose";
 import { CreateCatDto } from "./dtos/create-cat.dto";
 import { UpdateCatDto } from "./dtos/update-cat.dto";
-import { NotFoundError } from "rxjs";
+
 
 @Injectable()
 export class CatsService {
