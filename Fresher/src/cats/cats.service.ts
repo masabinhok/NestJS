@@ -1,15 +1,34 @@
-import { Injectable } from "@nestjs/common";
-import { Cat } from "./interfaces/cat.interface";
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Cat, CatDocument } from "./schemas/cat.schema";
+import { Model } from "mongoose";
+import { CreateCatDto } from "./dtos/create-cat.dto";
+import { UpdateCatDto } from "./dtos/update-cat.dto";
+import { NotFoundError } from "rxjs";
 
 @Injectable()
 export class CatsService {
-  private readonly cats: Cat[] = [];
+    constructor(@InjectModel(Cat.name) private catModel: Model<CatDocument>){}
 
-  create(cat: Cat){
-    this.cats.push(cat);
+  async create(createCatDto: CreateCatDto): Promise<Cat>{
+    const createdCat = new this.catModel(createCatDto);
+    return createdCat.save();
   }
 
-  findAll(): Cat[]{
-    return this.cats;
+  async findAll(): Promise<Cat[]>{
+    return this.catModel.find().exec();
+  }
+
+  async updateOne(id: string, updateCatDto: UpdateCatDto): Promise<Cat> {
+    const updatedCat = await this.catModel.findByIdAndUpdate(id, updateCatDto, {
+      new: true, 
+      runValidators: true,
+    });
+
+    if(!updatedCat){
+      throw new NotFoundException(`Cat with id ${id} not found`);
+    }
+
+    return updatedCat;
   }
 }
