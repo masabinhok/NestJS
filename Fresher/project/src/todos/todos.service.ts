@@ -3,14 +3,14 @@ import { Model } from 'mongoose';
 import { TodoDocument } from './schemas/todo.schema';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserDocument } from 'src/users/user.schema';
 import { UpdateTaskDto } from './dtos/update-task.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class TodosService {
   constructor(
     @InjectModel('Todo') private todoModel: Model<TodoDocument>,
-    @InjectModel('User') private userModel: Model<UserDocument>,
+    private usersService: UsersService
 ){}
 
   async createTask(userId: string, createTaskDto: CreateTaskDto): Promise<TodoDocument> {
@@ -20,21 +20,17 @@ export class TodosService {
     });
 
     const savedTask = await newTask.save();
+    if(!savedTask){
+      throw new Error('Task could not be created');
+    }
 
-    await this.userModel.findByIdAndUpdate(userId, {
-      $push: { todos: savedTask._id },
-    });
+    await this.usersService.addTaskToUser(userId, savedTask._id as string);
 
     return savedTask;
   }
 
   async getTasksByUserId(userId: string): Promise<any[]> {
-    const user = await this.userModel.findById(userId).populate('todos');
-    if(!user){
-      throw new Error('User not found');
-    }
-    console.log(user.todos);
-    return user.todos;
+    return this.usersService.getAllTodos(userId);
   }
 
   async updateTask( taskId: string, updateTaskDto: UpdateTaskDto ): Promise<TodoDocument> {
@@ -53,9 +49,7 @@ export class TodosService {
     if(!deletedTask){
       throw new Error(`Task with id ${taskId} not found`);
     }
-    await this.userModel.findByIdAndUpdate(userId, {
-     $pull: {todos: taskId},
-    })
+    await this.usersService.deleteTaskFromUser(userId, taskId);
     return deletedTask;
   }
 }
