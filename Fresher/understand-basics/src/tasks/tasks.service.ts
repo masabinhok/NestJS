@@ -12,7 +12,7 @@ export class TasksService {
   
   //create a task
   async create(createTaskDto: CreateTaskDto): Promise<TaskInterface> {
-    console.log(createTaskDto);
+   
     const createdTask = new this.taskModel(createTaskDto);
     return createdTask.save();
   }

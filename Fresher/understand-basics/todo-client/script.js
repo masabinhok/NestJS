@@ -99,7 +99,7 @@ form.addEventListener('submit', function (e) {
   const taskText = input.value.trim();
   if (taskText === '') return;
 
-  console.log(taskText);
+
 
 
 

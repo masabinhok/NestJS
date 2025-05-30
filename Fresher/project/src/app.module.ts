@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { config } from 'process';
 import { ConfigModule } from '@nestjs/config';
+import { TodosModule } from './todos/todos.module';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { ConfigModule } from '@nestjs/config';
     isGlobal: true, 
     envFilePath: '.env', 
     ignoreEnvFile: false, 
-  })],
+  }), TodosModule],
   controllers: [AppController],
   providers: [AppService],
 })

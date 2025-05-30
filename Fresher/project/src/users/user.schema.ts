@@ -1,5 +1,7 @@
 import {Schema, Prop,SchemaFactory } from '@nestjs/mongoose'
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
+import * as mongoose from 'mongoose';
+import { Todo } from 'src/todos/schemas/todo.schema';
 
 @Schema()
 export class User {
@@ -12,11 +14,11 @@ export class User {
   @Prop({required: true})
   password: string;
 
-  @Prop([{type: Types.ObjectId, ref: 'Todo', default: []}])
-  todos: Types.ObjectId[];
+  @Prop({type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Todo'}], default: []})
+  todos: Todo[];
 
-  @Prop([{type: Types.ObjectId, ref: 'Blog', default: []}])
-  blogs: Types.ObjectId[];
+  @Prop({type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Blog'}], default: []})
+  blogs: mongoose.Schema.Types.ObjectId[];
 
 }
 
