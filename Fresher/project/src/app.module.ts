@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { config } from 'process';
 import { ConfigModule } from '@nestjs/config';
 import { TodosModule } from './todos/todos.module';
+import { BlogsModule } from './blogs/blogs.module';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { TodosModule } from './todos/todos.module';
     isGlobal: true, 
     envFilePath: '.env', 
     ignoreEnvFile: false, 
-  }), TodosModule],
+  }), TodosModule, BlogsModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,6 +1,7 @@
 import {Schema, Prop,SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
+import { Blog } from 'src/blogs/schemas/blog.schema';
 import { Todo } from 'src/todos/schemas/todo.schema';
 
 @Schema()
@@ -18,8 +19,16 @@ export class User {
   todos: Todo[];
 
   @Prop({type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Blog'}], default: []})
-  blogs: mongoose.Schema.Types.ObjectId[];
+  blogs: Blog[];
 
+  @Prop({type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}], default: []})
+  comments: Comment[];
+
+  @Prop({type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Blog'}], default: []})
+  likedBlogs: Blog[];
+
+  @Prop({type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}], default: []})
+  likedComments: Comment[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
