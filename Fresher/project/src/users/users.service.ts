@@ -82,10 +82,13 @@ export class UsersService {
     return updatedUser;
   }
 
-  async addLikedBlogToUser(userId:string, blogId: string): Promise<UserDocument | null> {
-    const updatedUser = await this.userModel.findByIdAndUpdate(userId, {
+  async toggleLikedBlogToUser(userId:string, blogId: string, alreadyLiked: boolean): Promise<UserDocument | null> {
+    const updateOp = alreadyLiked ? {
+      $pull: { likedBlogs: blogId }
+    } : {
       $push: { likedBlogs: blogId }
-    }, {
+    }
+    const updatedUser = await this.userModel.findByIdAndUpdate(userId, updateOp, {
       new: true,
     });
 
@@ -96,10 +99,16 @@ export class UsersService {
     return updatedUser;
   }
 
-  async addLikedCommentToUser(userId: string, commentId: string) : Promise<UserDocument | null> {
-    const updatedUser = await this.userModel.findByIdAndUpdate(userId, {
+
+
+
+  async toggleLikedCommentToUser(userId: string, commentId: string, alreadyLiked: boolean) : Promise<UserDocument | null> {
+    const updateOp = alreadyLiked ? {
+      $pull: {likedComments: commentId}
+    }: {
       $push: {likedComments: commentId}
-    }, {
+    }
+    const updatedUser = await this.userModel.findByIdAndUpdate(userId, updateOp , {
       new: true,
     });
     if(!updatedUser){

@@ -3,7 +3,7 @@ import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dtos/create-blog.dto';
 import { Request } from 'express';
 import { CreateCommentDto } from './dtos/create-comment.dto';
-import { create } from 'domain';
+
 
 @Controller('blogs')
 export class BlogsController {
@@ -32,9 +32,9 @@ export class BlogsController {
   }
 
   @Post(':id/like')
-  async likeBlog(@Param('id') id: string, @Req() request: Request){
+  async toggleLikeBlog(@Param('id') id: string, @Req() request: Request){
     const user = request['user'];
-    return this.blogsService.likeBlog(id, user.sub);
+    return this.blogsService.toggleLikeBlog(id, user.sub);
   }
 
   @Post(':id/comment')
@@ -44,9 +44,9 @@ export class BlogsController {
   }
 
   @Post('/comment/:commentId/like')
-  async likeComment(@Param('commentId') commentId :string, @Req() request: Request){
+  async toggleLikeComment(@Param('commentId') commentId :string, @Req() request: Request){
     const user = request['user'];
-    return this.blogsService.likeComment(commentId, user.sub);
+    return this.blogsService.toggleLikeComment(commentId, user.sub);
   }
 
 }

@@ -7,6 +7,7 @@ import slugify from 'slugify';
 import { UsersService } from 'src/users/users.service';
 import { CreateCommentDto } from './dtos/create-comment.dto';
 import { CommentDocument } from './schemas/comment.schema';
+import { UserDocument } from 'src/users/user.schema';
 
 @Injectable()
 export class BlogsService {
@@ -62,19 +63,26 @@ export class BlogsService {
     return blog;
   }
 
-  async likeBlog(blogId: string, userId: string): Promise<BlogDocument | null> {
-    const blog = await this.blogModel.findByIdAndUpdate(blogId, {
-      $push: {likes: userId}
-    }, {
-      new: true,
-      runValidators: true,
-    });
+  async toggleLikeBlog(blogId: string, userId: string): Promise<string> {
+    const blog = await this.blogModel.findById(blogId).populate('likes', '_id')
+    console.log(blog)
     if(!blog){
-      throw new Error(`Blog with id ${blogId} not found`);
+      throw new Error(`Blog with ${blogId} not found.`)
     }
 
-    await this.usersService.addLikedBlogToUser(userId, blogId);
-    return blog;
+    let alreadyLiked = false;
+    blog.likes.map((like)=>{
+      if((like as UserDocument)._id == userId) {
+        alreadyLiked = true;
+      }
+    })
+
+    const updateOp = alreadyLiked ? {$pull: {likes: userId}} : {$push: {likes: userId}};
+
+    await this.blogModel.findByIdAndUpdate(blogId, updateOp);
+
+    await this.usersService.toggleLikedBlogToUser(userId, blogId, alreadyLiked);
+    return alreadyLiked ? 'Unliked' : 'Liked';
   }
 
   async createComment(blogId: string, userId: string, createCommentDto: CreateCommentDto ): Promise<CommentDocument | null> {
@@ -89,18 +97,26 @@ export class BlogsService {
     return comment.save();
   } 
 
-  async likeComment(commentId: string, userId: string): Promise<CommentDocument | null> {
-    const comment = await this.commentModel.findByIdAndUpdate(commentId, {
-      $push: {likes: userId}
-    }, {
-      new: true,
-      runValidators: true,
-    });
+  async toggleLikeComment(commentId: string, userId: string): Promise<string> {
+    const comment = await this.commentModel.findById(commentId).populate('likes').exec();
     if(!comment){
       throw new Error(`Comment with id ${commentId} not found`);
     }
-    await this.usersService.addLikedCommentToUser(userId, commentId);
-    return comment;
+    let alreadyLiked = false;
+    comment?.likes.map((like)=>{
+      if((like as UserDocument)._id == userId) {
+        alreadyLiked = true;
+      }
+    });
+
+    const updateOp = alreadyLiked ? { $pull: {likes: userId}} : { $push: {likes: userId}};
+     await this.commentModel.findByIdAndUpdate(commentId, updateOp, {
+      new: true,
+      runValidators: true,
+    });
+  
+    await this.usersService.toggleLikedCommentToUser(userId, commentId, alreadyLiked);
+    return alreadyLiked ?  'Unliked Comment' : 'Liked Comment';
   }
 
   async addCommentToBlog(blogId: string, commentId: string): Promise<BlogDocument | null> {
