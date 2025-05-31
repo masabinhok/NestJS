@@ -1,28 +1,34 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import * as mongoose from "mongoose";
-import { User } from "src/users/user.schema";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import * as mongoose from 'mongoose';
+import { User } from 'src/users/user.schema';
 
-@Schema({timestamps: true})
+@Schema({ timestamps: true })
 export class Blog {
-  @Prop({required: true})
+  @Prop({ required: true })
   title: string;
 
-  @Prop({required: true, unique: true})
+  @Prop({ required: true, unique: true })
   slug: string;
-  
-  @Prop({required: true})
+
+  @Prop({ required: true })
   content: string;
 
-  @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true})
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   author: User;
 
   @Prop()
   tags: string[];
 
-  @Prop({type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}], default: []})
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
+    default: [],
+  })
   comments: Comment[];
 
-  @Prop({type: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}], default: []})
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    default: [],
+  })
   likes: User[];
 }
 

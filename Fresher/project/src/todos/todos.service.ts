@@ -10,17 +10,20 @@ import { UsersService } from 'src/users/users.service';
 export class TodosService {
   constructor(
     @InjectModel('Todo') private todoModel: Model<TodoDocument>,
-    private usersService: UsersService
-){}
+    private usersService: UsersService,
+  ) {}
 
-  async createTask(userId: string, createTaskDto: CreateTaskDto): Promise<TodoDocument> {
+  async createTask(
+    userId: string,
+    createTaskDto: CreateTaskDto,
+  ): Promise<TodoDocument> {
     const newTask = new this.todoModel({
-      ...createTaskDto, 
+      ...createTaskDto,
       user: userId,
     });
 
     const savedTask = await newTask.save();
-    if(!savedTask){
+    if (!savedTask) {
       throw new Error('Task could not be created');
     }
 
@@ -33,20 +36,27 @@ export class TodosService {
     return this.usersService.getAllTodos(userId);
   }
 
-  async updateTask( taskId: string, updateTaskDto: UpdateTaskDto ): Promise<TodoDocument> {
-    const updatedTask = await this.todoModel.findByIdAndUpdate(taskId, updateTaskDto, {
-      new: true,
-      runValidators: true,
-    })
-    if(!updatedTask){
+  async updateTask(
+    taskId: string,
+    updateTaskDto: UpdateTaskDto,
+  ): Promise<TodoDocument> {
+    const updatedTask = await this.todoModel.findByIdAndUpdate(
+      taskId,
+      updateTaskDto,
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+    if (!updatedTask) {
       throw new Error(`Task with id ${taskId} not found`);
     }
     return updatedTask;
   }
 
   async deleteTask(userId: string, taskId: string): Promise<TodoDocument> {
-    const deletedTask  = await this.todoModel.findByIdAndDelete(taskId);
-    if(!deletedTask){
+    const deletedTask = await this.todoModel.findByIdAndDelete(taskId);
+    if (!deletedTask) {
       throw new Error(`Task with id ${taskId} not found`);
     }
     await this.usersService.deleteTaskFromUser(userId, taskId);

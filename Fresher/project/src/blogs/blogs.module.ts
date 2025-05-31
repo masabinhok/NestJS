@@ -7,15 +7,18 @@ import { UsersModule } from 'src/users/users.module';
 import { Comment, CommentSchema } from './schemas/comment.schema';
 
 @Module({
-  imports: [UsersModule,
+  imports: [
+    UsersModule,
     MongooseModule.forFeature([
       {
-        name: Blog.name, schema: BlogSchema
+        name: Blog.name,
+        schema: BlogSchema,
       },
       {
-        name: Comment.name, schema: CommentSchema
-      }
-    ])
+        name: Comment.name,
+        schema: CommentSchema,
+      },
+    ]),
   ],
   controllers: [BlogsController],
   providers: [BlogsService],

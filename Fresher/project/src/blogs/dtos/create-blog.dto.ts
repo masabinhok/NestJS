@@ -1,13 +1,12 @@
-import { IsAlpha, IsArray, IsString } from "class-validator";
+import { IsAlpha, IsArray, IsString } from 'class-validator';
 
 export class CreateBlogDto {
+  @IsString()
+  title: string;
 
-    @IsString()
-    title: string;
+  @IsString()
+  content: string;
 
-    @IsString()
-    content: string;
-
-    @IsArray()
-    tags: string[];
+  @IsArray()
+  tags: string[];
 }

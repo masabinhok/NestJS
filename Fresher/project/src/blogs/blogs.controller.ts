@@ -1,16 +1,27 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+} from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dtos/create-blog.dto';
 import { Request } from 'express';
 import { CreateCommentDto } from './dtos/create-comment.dto';
-
 
 @Controller('blogs')
 export class BlogsController {
   constructor(private readonly blogsService: BlogsService) {}
 
   @Post()
-  async createBlog(@Body() createBlogDto: CreateBlogDto, @Req() request: Request){
+  async createBlog(
+    @Body() createBlogDto: CreateBlogDto,
+    @Req() request: Request,
+  ) {
     const user = request['user'];
     return this.blogsService.createBlog(user.sub, createBlogDto);
   }
@@ -21,32 +32,41 @@ export class BlogsController {
   }
 
   @Put(':id')
-  async updateBlog(@Param('id') id: string, @Body() updateBlogDto: Partial<CreateBlogDto>){
+  async updateBlog(
+    @Param('id') id: string,
+    @Body() updateBlogDto: Partial<CreateBlogDto>,
+  ) {
     return this.blogsService.updateBlog(id, updateBlogDto);
   }
 
   @Delete(':id')
-  async deleteBlog(@Param('id') id: string, @Req() request: Request){
+  async deleteBlog(@Param('id') id: string, @Req() request: Request) {
     const user = request['user'];
     return this.blogsService.deleteBlog(id, user.sub);
   }
 
   @Post(':id/like')
-  async toggleLikeBlog(@Param('id') id: string, @Req() request: Request){
+  async toggleLikeBlog(@Param('id') id: string, @Req() request: Request) {
     const user = request['user'];
     return this.blogsService.toggleLikeBlog(id, user.sub);
   }
 
   @Post(':id/comment')
-  async createComment(@Param('id') id: string, @Req() request: Request, @Body() createCommentDto: CreateCommentDto){
-      const user = request['user'];
-      return this.blogsService.createComment(id, user.sub, createCommentDto);
+  async createComment(
+    @Param('id') id: string,
+    @Req() request: Request,
+    @Body() createCommentDto: CreateCommentDto,
+  ) {
+    const user = request['user'];
+    return this.blogsService.createComment(id, user.sub, createCommentDto);
   }
 
   @Post('/comment/:commentId/like')
-  async toggleLikeComment(@Param('commentId') commentId :string, @Req() request: Request){
+  async toggleLikeComment(
+    @Param('commentId') commentId: string,
+    @Req() request: Request,
+  ) {
     const user = request['user'];
     return this.blogsService.toggleLikeComment(commentId, user.sub);
   }
-
 }

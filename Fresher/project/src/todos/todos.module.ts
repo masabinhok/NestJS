@@ -6,11 +6,16 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/users/user.schema';
 import { UsersModule } from 'src/users/users.module';
 
-
 @Module({
-  imports: [ UsersModule, MongooseModule.forFeature([{
-    name: Todo.name, schema: TodoSchema,
-  }])],
+  imports: [
+    UsersModule,
+    MongooseModule.forFeature([
+      {
+        name: Todo.name,
+        schema: TodoSchema,
+      },
+    ]),
+  ],
   controllers: [TodosController],
   providers: [TodosService],
 })

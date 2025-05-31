@@ -13,12 +13,15 @@ import { BlogsModule } from './blogs/blogs.module';
   imports: [
     AuthModule,
     UsersModule,
-    MongooseModule.forRoot('mongodb://localhost:27017/fresher-project'), 
+    MongooseModule.forRoot('mongodb://localhost:27017/fresher-project'),
     ConfigModule.forRoot({
-    isGlobal: true, 
-    envFilePath: '.env', 
-    ignoreEnvFile: false, 
-  }), TodosModule, BlogsModule],
+      isGlobal: true,
+      envFilePath: '.env',
+      ignoreEnvFile: false,
+    }),
+    TodosModule,
+    BlogsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

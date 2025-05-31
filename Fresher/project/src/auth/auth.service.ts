@@ -3,56 +3,57 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { SignUpDto } from './dtos/sign-up.dto';
 import { LoginDto } from './dtos/login-dto';
-import {  UserDocument } from 'src/users/user.schema';
+import { UserDocument } from 'src/users/user.schema';
 import { JwtService } from '@nestjs/jwt';
-
-
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService, private jwtService: JwtService){}
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+  ) {}
 
-  async signUp(signUpDto: SignUpDto) :Promise<UserDocument> {
-    const {username, email, password} = signUpDto;
+  async signUp(signUpDto: SignUpDto): Promise<UserDocument> {
+    const { username, email, password } = signUpDto;
     const existingUser = await this.usersService.findByUsername(username);
 
-    if(existingUser) {
+    if (existingUser) {
       throw new Error('User already exists');
     }
 
     const hashedPassword = await this.hashPassword(password);
 
     const newUser = {
-      email, username, password: hashedPassword
-    }
+      email,
+      username,
+      password: hashedPassword,
+    };
 
     return this.usersService.createUser(newUser);
   }
 
   async login(loginDto: LoginDto): Promise<{ access_token: string }> {
-    const {username, password} = loginDto;
+    const { username, password } = loginDto;
     const user = await this.usersService.findByUsername(username);
 
-    if(!user){
+    if (!user) {
       throw new Error('User not found');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
-
-    if(!isPasswordValid){
+    if (!isPasswordValid) {
       throw new Error('Invalid password');
     }
 
     const payload = {
-      sub: user._id, username: user.username 
-    }
-
-
+      sub: user._id,
+      username: user.username,
+    };
 
     return {
       access_token: await this.jwtService.signAsync(payload),
-    }
+    };
   }
 
   async hashPassword(plain: string): Promise<string> {
