@@ -4,6 +4,10 @@ import { RoleGuard } from 'src/role.guard';
 import { Roles } from 'src/roles.decorator';
 import { CreateCatDto } from './dtos/create-cat.dto';
 import { LoggingInterceptor } from './interceptors/logging.interceptor';
+import { TransformInterceptor } from './interceptors/transform.interceptor';
+import { ErrorsInterceptor } from './interceptors/errors.interceptor';
+import { CacheInterceptor } from './interceptors/cache.interceptor';
+import { TimeoutError } from 'rxjs';
 
 
 
@@ -19,7 +23,7 @@ export class CatsController {
     this.catsService.createCat(createCatDto);
   }
 
-  @UseInterceptors(LoggingInterceptor)
+  @UseInterceptors(LoggingInterceptor, TransformInterceptor, ErrorsInterceptor, CacheInterceptor, TimeoutError)
   @Get()
   async findAll(){
     return this.catsService.findAll();
